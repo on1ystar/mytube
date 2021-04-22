@@ -18,12 +18,18 @@
     "url": "git+https://github.com/on1ystar/mytube.git"
   },
   "scripts": {
-    "start": "nodemon --exec babel-node src/init.js --delay 2"
+    "dev": "nodemon --exec babel-node src/server.js"
   },
   "devDependencies": {
     "@babel/core": "^7.13.16",
-    "@babel/preset-env": "^7.13.15",
     "@babel/node": "^7.13.13",
-    "nodemon": "^2.0.7"
+    "@babel/preset-env": "^7.13.15",
+    "eslint": "^7.24.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.2.0",
+    "eslint-plugin-html": "^6.1.2",
+    "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.7",
+    "prettier": "2.2.1"
   }
 }
