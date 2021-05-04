@@ -1,13 +1,24 @@
-/ -> Home
-/join -> Join
-/login -> Login
-/search -> Search
+# Wetube
 
-/users/edit -> Edit user
-/users/delete -> Delete user
+**YouTubeC lone Coding**
 
-/videos/watch -> Watch video
-/videos/edit -> Edit video
-/videos/delete -> Delete video
-/videos/comments -> Comment on a video
-/videos/comments/delete -> Delete a comment
+## global
+
+- / -> Home
+- /join -> Join
+- /login -> Login
+- /search -> Search
+
+## user
+
+- /users/:id -> See user
+- /users/logout -> Log out
+- /users/edit -> Edit my profile
+- /users/delete -> Delete my profile
+
+## video
+
+- videos/:id -> See video
+- videos/:id/edit -> Edit video
+- videos/:id/delete -> Delete video
+- videos/upload -> Upload video
