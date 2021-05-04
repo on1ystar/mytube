@@ -14,7 +14,7 @@
 - /users/:id -> See user
 - /users/logout -> Log out
 - /users/edit -> Edit my profile
-- /users/delete -> Delete my profile
+- /users/remove -> Remove my profile
 
 ## video
 
