@@ -2,7 +2,5 @@ extends base
 include mixins/video
 
 block content 
-    header 
-        h1 We'll show you the trends in the videos
     each video in videos 
         +video(video)
