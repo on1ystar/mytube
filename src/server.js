@@ -1,6 +1,7 @@
 /* eslint-disable prefer-destructuring */
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 
+import './db';
 import express from 'express';
 import morgan from 'morgan';
 import globalRouter from './routers/globalRouter';
