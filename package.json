@@ -21,7 +21,7 @@
     "url": "git+https://github.com/on1ystar/mytube.git"
   },
   "scripts": {
-    "dev": "nodemon --exec babel-node src/server.js"
+    "dev": "nodemon --exec babel-node src/init.js"
   },
   "devDependencies": {
     "eslint": "^7.24.0",
