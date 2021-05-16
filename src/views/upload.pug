@@ -1,7 +1,11 @@
 extends base
 
 block content 
+    if errorMesagge
+        span #{errorMessage}
     form(method="post") 
-        input(type="text", name="title", placeholder="New Title", required)
+        input(type="text", name="title", placeholder="New Title", required, minlength="2", maxlength="80")
+        input(type="text", name="description", placeholder="New discription", required, maxlength="100")
+        input(type="text", name="hashtags", placeholder="hashtags, seperated by ,(comma)", required, style="width: 50%")
         input(type="submit", value="upload")
         
