@@ -7,6 +7,11 @@ html(lang="ko")
         main
             header 
                 h1 #{pageTitle}
-                block header
+                nav 
+                    ul 
+                        li 
+                            a(href="/") Home
+                        li 
+                            a(href="/videos/upload") Upload Video 
             block content
     include partials/footer.pug
