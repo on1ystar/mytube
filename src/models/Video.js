@@ -18,12 +18,13 @@ const videoSchema = new mongoose.Schema({
   }
 });
 
-videoSchema.pre('save', async function () {
-  console.log(this);
-  this.hashtags = this.hashtags[0]
+videoSchema.static('formatHashtags', hashtags =>
+  hashtags
     .split(',')
-    .map(word => (word.startsWith('#') ? word : `#${word}`));
-});
+    .map(word =>
+      word.trim().startsWith('#') ? word.trim() : `#${word.trim()}`
+    )
+);
 
 const Video = mongoose.model('Video', videoSchema);
 
