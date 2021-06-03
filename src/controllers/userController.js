@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import fetch from 'node-fetch';
 import User from '../models/User';
 
 export const getJoin = (req, res) => {
@@ -70,8 +71,37 @@ export const requestGithubLogin = (req, res) => {
   const requestUrl = `${baseUrl}?${params}`;
   return res.redirect(requestUrl);
 };
-export const callbackGithubLogin = (req, res) => {
-  //
+export const callbackGithubLogin = async (req, res) => {
+  const baseUrl = 'https://github.com/login/oauth/access_token';
+  const config = {
+    client_id: process.env.GH_CLIENT_ID,
+    client_secret: process.env.GH_CLIENT_SECRET,
+    code: req.query.code
+  };
+  const params = new URLSearchParams(config).toString();
+  const requestUrl = `${baseUrl}?${params}`;
+  const tokenRequest = await (
+    await fetch(requestUrl, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+  ).json();
+  console.log(tokenRequest);
+  if ('access_token' in tokenRequest) {
+    const { access_token } = tokenRequest;
+    const userRequest = await (
+      await fetch('https://api.github.com/user', {
+        headers: {
+          Authorization: `token ${access_token}`
+        }
+      })
+    ).json();
+    console.log(userRequest);
+  } else {
+    return res.redirect('/login');
+  }
 };
 
 export const edit = (req, res) => res.send('Edit user');
