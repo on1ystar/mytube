@@ -88,49 +88,51 @@ export const callbackGithubLogin = async (req, res) => {
       }
     })
   ).json();
-  if ('access_token' in tokenRequest) {
-    const { access_token } = tokenRequest;
-    const apiUrl = 'https://api.github.com';
-    const emailsData = await (
-      await fetch(`${apiUrl}/user/emails`, {
+  if (!('access_token' in tokenRequest)) {
+    return res.redirect('/login');
+  }
+  const { access_token } = tokenRequest;
+  const apiUrl = 'https://api.github.com';
+  const emailsData = await (
+    await fetch(`${apiUrl}/user/emails`, {
+      headers: {
+        Authorization: `token ${access_token}`
+      }
+    })
+  ).json();
+  const emailObj = emailsData.find(
+    email => email.primary === true && email.verified === true
+  );
+  if (!emailObj) {
+    // 검증된 깃 허브 이메일이 존재하지 않음
+    return res.redirect('/login');
+  }
+  const userExists = await User.findOne({ email: emailObj.email });
+  if (userExists) {
+    //  같은 이메일을 가진 user가 존재
+    req.session.loggedIn = true;
+    req.session.user = userExists;
+  } else {
+    // 존재하지 않으면 새로운 계정 생성
+    const userData = await (
+      await fetch(`${apiUrl}/user`, {
         headers: {
           Authorization: `token ${access_token}`
         }
       })
     ).json();
-    const emailObj = emailsData.find(
-      email => email.primary === true && email.verified === true
-    );
-    if (!emailObj) {
-      return res.redirect('/login');
-    }
-    const userExists = await User.findOne({ email: emailObj.email });
-    if (userExists) {
-      req.session.loggedIn = true;
-      req.session.user = userExists;
-    } else {
-      const userData = await (
-        await fetch(`${apiUrl}/user`, {
-          headers: {
-            Authorization: `token ${access_token}`
-          }
-        })
-      ).json();
-      const user = await User.create({
-        username: userData.login,
-        email: emailObj.email,
-        password: '',
-        socialOnly: true,
-        name: userData.name,
-        location: userData.location
-      });
-      req.session.loggedIn = true;
-      req.session.user = user;
-    }
-    return res.redirect('/');
-  } else {
-    return res.redirect('/login');
+    const user = await User.create({
+      username: userData.login,
+      email: emailObj.email,
+      password: '',
+      socialOnly: true,
+      name: userData.name,
+      location: userData.location
+    });
+    req.session.loggedIn = true;
+    req.session.user = user;
   }
+  return res.redirect('/');
 };
 
 export const edit = (req, res) => res.send('Edit user');
