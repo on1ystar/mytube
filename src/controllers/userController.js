@@ -41,12 +41,13 @@ export const getLogin = (req, res) =>
 
 export const postLogin = async (req, res) => {
   const { username, password } = req.body;
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username, socialOnly: false });
   const pageTitle = 'Login';
   if (!user) {
     return res.status(400).render('/login', {
       pageTitle,
-      errorMessage: 'An account with this username does not exists'
+      errorMessage:
+        'An account with this username does not exists. Try to joining or github email login'
     });
   }
   const matchPassword = await bcrypt.compare(password, user.password);
@@ -88,6 +89,7 @@ export const callbackGithubLogin = async (req, res) => {
       }
     })
   ).json();
+  // access_token을 가져오지 못한 에러 처리
   if (!('access_token' in tokenRequest)) {
     return res.redirect('/login');
   }
@@ -104,16 +106,12 @@ export const callbackGithubLogin = async (req, res) => {
     email => email.primary === true && email.verified === true
   );
   if (!emailObj) {
-    // 검증된 깃 허브 이메일이 존재하지 않음
+    // 검증된 깃 허브 이메일이 존재하지 않는 에러 처리
     return res.redirect('/login');
   }
-  const userExists = await User.findOne({ email: emailObj.email });
-  if (userExists) {
-    //  같은 이메일을 가진 user가 존재
-    req.session.loggedIn = true;
-    req.session.user = userExists;
-  } else {
-    // 존재하지 않으면 새로운 계정 생성
+  let user = await User.findOne({ email: emailObj.email });
+  // 존재하지 않으면 새로운 계정 생성
+  if (!user) {
     const userData = await (
       await fetch(`${apiUrl}/user`, {
         headers: {
@@ -121,21 +119,24 @@ export const callbackGithubLogin = async (req, res) => {
         }
       })
     ).json();
-    const user = await User.create({
+    user = await User.create({
       username: userData.login,
       email: emailObj.email,
       password: '',
+      avatarUrl: userData.avatar_url,
       socialOnly: true,
       name: userData.name,
       location: userData.location
     });
-    req.session.loggedIn = true;
-    req.session.user = user;
   }
+  req.session.loggedIn = true;
+  req.session.user = user;
   return res.redirect('/');
 };
 
+export const logout = (req, res) => {
+  req.session.destroy();
+  return res.redirect('/');
+};
 export const edit = (req, res) => res.send('Edit user');
-export const remove = (req, res) => res.send('Remove user');
-export const logout = (req, res) => res.send('Logout');
 export const see = (req, res) => res.send('See user');
